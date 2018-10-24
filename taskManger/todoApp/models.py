@@ -4,38 +4,32 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
 
-# Create your models here.
-
-# task model -  user_id, title, due_date
-
-
 class TimeStampedModel(models.Model):
 
-    created = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-    modified = models.DateTimeField(auto_now=True)
+    createdDate = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    modifiedDate = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
 
 
 class BaseTask(TimeStampedModel):
-
     title = models.CharField(max_length=200)
-    is_completed = models.BooleanField(default=False)
+    description = models.CharField(max_length=200,default='')
+    isCompleted = models.BooleanField(default=False)
+    isDeleted = models.BooleanField(default=False)
+    deletedAtDate = models.DateTimeField(blank=True, null=True)
 
-    is_deleted = models.BooleanField(default=False)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-
-    def soft_delete(self):
+    def softDelete(self):
         self.is_deleted = True
         self.deleted_at = timezone.now()
         self.save()
 
-    def mark_complete(self):
+    def markComplete(self):
         self.is_completed = True
         self.save()
 
-    def mark_pending(self):
+    def markPending(self):
         self.is_completed = False
         self.save()
 
@@ -51,13 +45,19 @@ class Task(BaseTask):
         (3, "High"),
         (4, "Urgent")
     )
-
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    due_date = models.DateField()
+    dueDate = models.DateField()
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=2)
 
     def __str__(self):
         return self.title
 
     class Meta:
-        ordering = ['due_date']
+        ordering = ['dueDate']
+
+class SubTask(BaseTask):
+
+    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
