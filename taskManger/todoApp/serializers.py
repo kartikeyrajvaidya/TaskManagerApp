@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import Task,SubTask
 
 
 class TaskSerializer(serializers.ModelSerializer):

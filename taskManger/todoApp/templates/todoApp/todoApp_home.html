@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <br>
+        <p style="font-size: 24px;">Tasks</p>
+
+        <div class="row">
+        <div class="col-md-12">
+
+          <div class="col-md-8">
+            <input class="form-control" id="search_input" type="text" placeholder="Search Tasks ...">
+          </div>
+
+          <div class="col-md-1" align="">
+                <button class="btn" id="add_task_btn" data-toggle="modal" data-target="#add_task_modal">Add Task</button>
+              </div>
+
+          <div class="col-md-1">
+
+            <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown" >
+                        <span id="dropdown_text" type= "text"></span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?filter=All">All</a></li>
+                        <li><a class="dropdown-item" href="?filter=today">Today</a></li>
+                        <li><a class="dropdown-item" href="?filter=overdue">Overdue</a></li>
+                        <li><a class="dropdown-item" href="?filter=this_week">This week</a></li>
+                        <li><a class="dropdown-item" href="?filter=next_week">Next week</a></li>
+                    </ul>
+            </div>
+          </div>
+        </div>
+        </div>
+    </div>
+    <br>
+</div>
+
+
+<!-- modal add task here  -->
+
+  <div id="add_task_modal" class="modal fade" >
+          <div class="modal-dialog">
+                  <div class="modal-content">
+
+
+
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title">Add new task</h4>
+                      </div>
+
+                    <div class="modal-body">
+
+
+
+                        <form id="" action="/" method="post">
+
+                            <div class="row">
+                                <div class="input-field col-md-12">
+                                    <label for="title_inp">Task Title : </label>
+                                    <input  id="title_inp" type="text" class=" form-control validate" placeholder="Enter Task Title" maxlength="198">
+                                </div>
+                            </div>
+
+                            <br>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="input-field inline">
+                                        <label for="due_date_inp" >Due date : </label>
+                                    <input  id="due_date_inp" type="date" class=" form-control validate" placeholder="Due date for task">
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </form>
+
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" id="add_task_submit" class="btn btn-default">Submit</button>
+                    </div>
+
+
+                </div>
+
+        </div>
+    </div>
+    <!-- --------- add SUB-TASK modal below ----------- -->
+
+
+
+
+    <div id="add_sub_task_modal" class="modal fade" >
+      <div class="modal-dialog">
+          <div class="modal-content">
+
+
+
+              <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Add Sub-tasks</h4>
+                </div>
+
+                <div class="modal-body">
+
+                  <p>Sub-tasks :</p>
+                  <div class="input_fields_wrap">
+                      <input type="text" name="answer[]" class="field-long form-control" placeholder="Enter sub-task ..." maxlength="198" style="margin-bottom: 4px;"/>
+                    </div>
+
+                    <br>
+                    <button class="btn btn-sm btn-primary add_field_button">Add another sub-task</button>
+                    <button class="btn btn-sm btn-danger remove_field_button">Remove sub-task</button>
+
+                    <input id="task_id_for_subtask" type="text" class="validate" hidden>
+
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="button" id="add_sub_task_submit" class="btn btn-default">Save</button>
+                  </div>
+
+
+            </div>
+
+</div>
+
+
+{% endblock %}

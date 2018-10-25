@@ -1,13 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %}Django Auth Tutorial{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <title>
+        {%  if title %}
+        {{title}}
+        {% else %}
+        Todo Project
+        {% endif %}
+    </title>
 </head>
 <body>
-  <main>
-    {% block content %}
+    {% block navbar %}
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand"> Task Manager</a>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li><a href="{% url 'todoApp:home' %}">Todo App</a></li>
+                        <li><a href="#modal_about_app" data-toggle="modal" data-target="#modal_about_app">About</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        {% if user.is_authenticated %}
+                        <li><a href="#"> {{ user.get_username}}</a></li>
+                        <li><a href="{% url 'logout' %}">Logout</a></li>
+                        {% else %}
+                        <li><a href="{% url 'accounts:signup' %}">Sign-up</a></li>
+                        <li><a href="{% url 'login' %}">Login</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
     {% endblock %}
-  </main>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+
+                {% block content %}
+
+                {% endblock %}
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- ----------- about modal ------------- -->
+
+
+
+
+<div id="modal_about_app" class="modal fade" >
+        <div class="modal-dialog">
+                <div class="modal-content">
+
+
+
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">About this app</h4>
+                    </div>
+
+                    <div class="modal-body">
+
+                        This is a simple webapp for making to-do lists.
+                        <br>
+                        It is made upon python Django framework and uses Bootstrap3 with jQuery on the frontend.
+                        Database used is MySQL, managed by django ORM.
+                        <br>
+                        Its an open-source project, with source code available on github. <br>
+                        Developer profiles : <a href="https://github.com/sanskarsharma">Github</a>, <a href="https://linkedin.com/in/sanskarssh">LinkedIn</a>, <a href="https://www.hackerearth.com/@sanskarsharma">Hackerearth</a>
+
+
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" onclick="location.href='https://github.com/sanskarsharma/todoapp_django'" type="button" data-toggle="a" data-target="https://github.com/sanskarsharma/todoapp_django" href="https://github.com/sanskarsharma/todoapp_django">Visit Repository</button>
+                    </div>
+
+
+                </div>
+
+        </div>
+    </div>
 </body>
 </html>
