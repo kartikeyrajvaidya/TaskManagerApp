@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
 
+
 class TimeStampedModel(models.Model):
 
     createdDate = models.DateTimeField(auto_now_add=True, blank=True, null=True)
@@ -21,16 +22,16 @@ class BaseTask(TimeStampedModel):
     deletedAtDate = models.DateTimeField(blank=True, null=True)
 
     def softDelete(self):
-        self.is_deleted = True
-        self.deleted_at = timezone.now()
+        self.isDeleted = True
+        self.deletedAtDate = timezone.now()
         self.save()
 
     def markComplete(self):
-        self.is_completed = True
+        self.isCompleted = True
         self.save()
 
     def markPending(self):
-        self.is_completed = False
+        self.isCompleted = False
         self.save()
 
     class Meta:
@@ -54,6 +55,7 @@ class Task(BaseTask):
 
     class Meta:
         ordering = ['dueDate']
+
 
 class SubTask(BaseTask):
 

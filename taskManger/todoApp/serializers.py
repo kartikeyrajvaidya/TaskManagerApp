@@ -1,22 +1,52 @@
 from rest_framework import serializers
-from .models import Task,SubTask
+from .models import Task, SubTask
 
 
-class TaskSerializer(serializers.ModelSerializer):
+class TaskCreateSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'id',
             'title',
             'description',
-            'isCompleted',
             'dueDate',
             'priority',
         )
         model = Task
 
-class SubTaskSerializer(serializers.ModelSerializer):
 
-    task = TaskSerializer(read_only=True)
+class TaskListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = (
+            'id',
+            'title',
+            'description',
+            'dueDate',
+            'priority',
+            
+            "isCompleted",
+
+            "createdDate",
+            "modifiedDate",
+        )
+        model = Task
+
+
+class SubTaskCreateSerializer(serializers.ModelSerializer):
+
+    task = TaskListSerializer(read_only=True)
+
+    class Meta:
+        fields = (
+            'task',
+            'id',
+            'title',
+            'description',
+        )
+        model = SubTask
+
+
+class SubTaskListSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
@@ -24,5 +54,9 @@ class SubTaskSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'isCompleted',
+
+            "createdDate",
+            "modifiedDate",
+
         )
         model = SubTask
