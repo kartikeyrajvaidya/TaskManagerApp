@@ -25,10 +25,42 @@
         Todo Project
         {% endif %}
     </title>
+    <style type="text/css">
+	.login-form {
+		width: 340px;
+    	margin: 50px auto;
+	}
+    .login-form form {
+    	margin-bottom: 15px;
+        background: #f7f7f7;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+        padding: 30px;
+    }
+    .login-form h2 {
+        margin: 0 0 15px;
+    }
+    .form-control, .btn {
+        min-height: 38px;
+        border-radius: 2px;
+    }
+    .btn {
+        font-size: 15px;
+        font-weight: bold;
+    }
+    .shiftLeft{
+    margin-left: 65px;
+    }
+    body {
+    background-color:#f2f7ff ;
+    }
+    nav {
+      background-color:#b2d3e6 ;
+    }
+</style>
 </head>
 <body>
     {% block navbar %}
-        <nav class="navbar navbar-default">
+        <nav class="navbar navbar-expand-sm ">
             <div class="container">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -37,12 +69,14 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand"> Task Manager</a>
+                    <a class="navbar-brand" href="{% url 'home' %}">
+                      <B style="color: #070707; font-family: Gill Sans;">Task Manager</B>
+                    </a>
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'todoApp:home' %}">Todo App</a></li>
-                        <li><a href="#modal_about_app" data-toggle="modal" data-target="#modal_about_app">About</a></li>
+                        <li><a href="{% url 'todoApp:todoHome' %}">Todo List</a></li>
+                        <li><a href="{% url 'about' %}" >About</a></li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         {% if user.is_authenticated %}

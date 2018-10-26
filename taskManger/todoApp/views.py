@@ -3,9 +3,11 @@ from rest_framework.generics import ListCreateAPIView,RetrieveUpdateDestroyAPIVi
 from .models import Task,SubTask
 from .serializers import TaskSerializer,SubTaskSerializer
 from django.views.generic import (TemplateView)
+from django.contrib.auth.mixins import (LoginRequiredMixin,
+                                        PermissionRequiredMixin)
 
 
-class HomePage(TemplateView):
+class HomePage(LoginRequiredMixin,TemplateView):
     template_name = 'todoApp/todoApp_home.html'
 
 class TaskList(ListCreateAPIView):

@@ -3,10 +3,34 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Login</button>
-</form>
+
+
+<div class="login-form">
+    <form method="post">
+        {% csrf_token %}
+        <h2 class="text-center">Log in</h2>
+        <br>
+        {% for error in form.non_field_errors %}
+            <div class="form-group has-errors text-danger large">
+                {{error}}
+            </div>
+        {% endfor %}
+        <div class="shiftLeft">
+        {% for field in form %}
+        <div class="form-group">
+            {{field.label_tag}} {{field}}
+        </div>
+        {% endfor %}
+        </div>
+        <br>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block">Log in</button>
+        </div>
+        <div class="clearfix">
+            <label class="pull-left checkbox-inline"><input type="checkbox"> Remember me</label>
+            <a href="#" class="pull-right">Forgot Password?</a>
+        </div>
+    </form>
+    <p class="text-center"><a href="{% url 'accounts:signup' %}">Create an Account</a></p>
+</div>
 {% endblock %}
