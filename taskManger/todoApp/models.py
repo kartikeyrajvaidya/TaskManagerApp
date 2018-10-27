@@ -15,8 +15,9 @@ class TimeStampedModel(models.Model):
 
 
 class BaseTask(TimeStampedModel):
+
     title = models.CharField(max_length=200)
-    description = models.CharField(max_length=200,default='')
+    description = models.CharField(max_length=200)
     isCompleted = models.BooleanField(default=False)
     isDeleted = models.BooleanField(default=False)
     deletedAtDate = models.DateTimeField(blank=True, null=True)

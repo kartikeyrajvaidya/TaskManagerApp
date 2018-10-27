@@ -1,6 +1,189 @@
 {% extends 'base.html' %}
 {% block content %}
+<script>
+         $(document).ready(function(){
 
+           var storedValue = sessionStorage.getItem('dropdownselected') || 'All';
+           document.getElementById("dropdown_text").innerHTML = storedValue;
+           var xhttp = new XMLHttpRequest();
+           xhttp.onreadystatechange = function() {
+             if (this.readyState == 4 && this.status == 200) {
+               console.log(this.responseText);
+               var res=JSON.parse(this.responseText);
+               // $("#response_text").attr("href", "http://"+res['short_url']);
+                // document.getElementById("response_card").hidden = false;
+                // document.getElementById('data_title').innerHTML=res["bank"]["name"] ;
+                // detail_str =  "City : " + res["city"] + "<br>" + "District : " + res["district"] + "<br>"
+                // detail_str = detail_str + "State : " + res["state"] + "<br>" + "Address : " + res["address"] + "<br>"
+                // detail_str = detail_str + "Branch : " + res["branch"] + "<br>" + "IFSC Code: " + res["ifsc"] + "<br>"
+                // document.getElementById('data_detail').innerHTML= detail_str ;
+              }
+              // else{
+              //     $.alert({
+              //               title: 'Request could not be completed!',
+              //       });
+              //      }
+               };
+               xhttp.open("GET", "tasks?"+storedValue, false);
+               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+               xhttp.send();
+
+           $(".dropdown-item").click(function(){
+                console.log("dropdown clickEEEEEEEEEDDD");
+                var text = $(this).text();
+                console.log(text);
+                sessionStorage.setItem('dropdownselected', text );
+                $('#something').click(function() {
+                    location.reload();
+                });
+            });
+
+            $("#add_task_submit").click(function(){
+
+              inputData= {}
+              flag = 1
+              if(document.getElementById("taskTitle").value != "")
+              {
+                  console.log(document.getElementById("taskTitle").value)
+                  inputData["title"]= document.getElementById("taskTitle").value;
+
+              }else{
+                  $.alert('Please enter a title', 'Invalid Input');
+                  flag=0;
+              }
+
+              if(document.getElementById("taskDescription").value != "")
+              {
+                  console.log(document.getElementById("taskDescription").value)
+                  inputData["description"]= document.getElementById("taskDescription").value;
+
+              }else{
+                  $.alert('Please enter a Description', 'Invalid Input');
+                  flag=0;
+              }
+
+              var dueDate = document.getElementById("taskDueDate").value
+              if(dueDate != "")
+              {
+                  if(isValidDate(dueDate)){
+                      console.log(dueDate)
+                      // var bits = dueDate.split('-');
+                      // var da = new Date(bits[0], bits[1] - 1, bits[2]);
+                      // console.log(da);
+                      inputData['dueDate']= dueDate ;
+                  }else{
+                      $.alert("Inavlid date", "Enter valid Date")
+                      flag=0;
+                  }
+
+
+              }else{
+                  flag=0;
+              }
+              if(flag==1){
+                  var xhttp = new XMLHttpRequest();
+                  xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                      console.log(this.responseText);
+                      var res=JSON.parse(this.responseText);
+                      if(res["message"] == "OK"){
+                          $('#add_task_modal').modal('hide');
+                          $.confirm({
+                              title: 'Task Added!',
+                              content: 'Your task was added successfully!',
+                              buttons: {
+                                  Okay: function () {
+                                      location.reload(true);
+                                  }
+                              }
+                          });
+                      }
+                    }
+                  };
+                  var parm='title='+ inputData['title']+ '&description=' + inputData['description'] + '&dueDate=' + inputData['dueDate'] + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+                  xhttp.open("POST", "tasks/", false);
+                  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                  xhttp.send(parm);
+              }else{
+                  console.log("REQUEST FAILED... INVALID DATA")
+              }
+          });
+          function isValidDate(s) {
+                var bits = s.split('-');
+                var d = new Date(bits[0], bits[1] - 1, bits[2]);
+                return d && (d.getMonth() + 1) == bits[1];
+            }
+
+            // document.getElementById("response_card").hidden = true;
+            // $("#get_branch_details").click(function(){
+            //     console.log("CLICKKEEEEEEEEED")
+            //     ifsc_code = document.getElementById("ifsc_code_inp").value;
+            //     console.log(ifsc_code)
+            //     var xhttp = new XMLHttpRequest();
+            //     xhttp.onreadystatechange = function() {
+            //         if (this.readyState == 4 && this.status == 200) {
+            //               console.log(this.responseText);
+            //               var res=JSON.parse(this.responseText);
+            //               // $("#response_text").attr("href", "http://"+res['short_url']);
+            //               document.getElementById("response_card").hidden = false;
+            //               document.getElementById('data_title').innerHTML=res["bank"]["name"] ;
+            //               detail_str =  "City : " + res["city"] + "<br>" + "District : " + res["district"] + "<br>"
+            //               detail_str = detail_str + "State : " + res["state"] + "<br>" + "Address : " + res["address"] + "<br>"
+            //               detail_str = detail_str + "Branch : " + res["branch"] + "<br>" + "IFSC Code: " + res["ifsc"] + "<br>"
+            //               document.getElementById('data_detail').innerHTML= detail_str ;
+            //         }else{
+            //                 document.getElementById("response_card").hidden = true;
+            //                 var res=JSON.parse(this.responseText);
+            //                 $.alert({
+            //                     title: 'Request could not be completed!',
+            //                     content: res['message'] + "<br> Response Status : " + this.status,
+            //                 });
+            //         }
+            //     };
+            //     // var parm='ifsc_code=' + long_url;
+            //     xhttp.open("GET", "/app/branch/"+ifsc_code, false);
+            //     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //     xhttp.send();
+            // });
+            //  $("#get_all_branches").click(function(){
+            //     console.log("CLICKKEEEEEEEEED")
+            //     city = document.getElementById("city").value;
+            //     console.log(city)
+            //     bank_name = document.getElementById("bank_name").value;
+            //     console.log(bank_name)
+            //     var xhttp = new XMLHttpRequest();
+            //     xhttp.onreadystatechange = function() {
+            //         if (this.readyState == 4 && this.status == 200) {
+            //             console.log(this.responseText);
+            //             document.getElementById("all_branches_list").hidden = false;
+            //             var res=JSON.parse(this.responseText);
+            //             var response_html_content = "";
+            //             $.each(res, function (i, v) {
+            //                                 //list += '<li class="page" id="'+i+'">' + '<a>' + v.name + '</a></li>'
+            //                 console.log(v);
+            //                 var item_details = "Branch : " + v['branch'] + "<br>" + "IFSC Code : " + v['ifsc'] + "<br>"  ;            //,, state
+            //                 item_details = item_details + "District : " + v['district'] + "<br>" + "Address : " + v['address'] + "<br>";
+            //                 var list_item= '<li class="list-group-item">' + item_details + '</li>' ;
+            //                 response_html_content = response_html_content + list_item;
+            //             });
+            //             document.getElementById('all_branches_list').innerHTML= response_html_content ;
+            //         }else{
+            //             document.getElementById("all_branches_list").hidden = true;
+            //             var res=JSON.parse(this.responseText);
+            //             $.alert({
+            //                 title: 'Request could not be completed!',
+            //                 content: res['message'] + "<br> Response Status : " + this.status,
+            //             });
+            //         }
+            //     };
+            //     var param_string='bank_name=' + bank_name + '&city=' + city;
+            //     xhttp.open("GET", "/app/branches/?"+param_string , false);
+            //     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            //     xhttp.send();
+            //  });
+         });
+
+</script>
 <div class="container">
     <div class="row">
         <br>
@@ -15,7 +198,7 @@
 
           <div class="col-md-1" align="">
                 <button class="btn" id="add_task_btn" data-toggle="modal" data-target="#add_task_modal">Add Task</button>
-              </div>
+          </div>
 
           <div class="col-md-1">
 
@@ -25,11 +208,11 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="?filter=All">All</a></li>
-                        <li><a class="dropdown-item" href="?filter=today">Today</a></li>
-                        <li><a class="dropdown-item" href="?filter=overdue">Overdue</a></li>
-                        <li><a class="dropdown-item" href="?filter=this_week">This week</a></li>
-                        <li><a class="dropdown-item" href="?filter=next_week">Next week</a></li>
+                        <li><a class="dropdown-item" href="tasks?filter=All">All</a></li>
+                        <li><a class="dropdown-item" href="tasks?filter=today">Today</a></li>
+                        <li><a class="dropdown-item" href="tasks?filter=overdue">Overdue</a></li>
+                        <li><a class="dropdown-item" href="tasks?filter=this_week">This week</a></li>
+                        <li><a class="dropdown-item" href="tasks?filter=next_week">Next week</a></li>
                     </ul>
             </div>
           </div>
@@ -54,25 +237,26 @@
                       </div>
 
                     <div class="modal-body">
-
-
-
                         <form id="" action="/" method="post">
-
                             <div class="row">
                                 <div class="input-field col-md-12">
-                                    <label for="title_inp">Task Title : </label>
-                                    <input  id="title_inp" type="text" class=" form-control validate" placeholder="Enter Task Title" maxlength="198">
+                                    <label for="taskTitle">Task Title : </label>
+                                    <input  id="taskTitle" type="text" class=" form-control validate" placeholder="Enter Task Title" maxlength="20">
                                 </div>
                             </div>
-
                             <br>
-
+                            <div class="row">
+                                <div class="input-field col-md-12">
+                                    <label for="taskDescription">Task Description : </label>
+                                    <input  id="taskDescription" type="textarea" class=" form-control validate" placeholder="Enter Task Description" maxlength="198">
+                                </div>
+                            </div>
+                            <br>
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="input-field inline">
-                                        <label for="due_date_inp" >Due date : </label>
-                                    <input  id="due_date_inp" type="date" class=" form-control validate" placeholder="Due date for task">
+                                        <label for="taskDueDate" >Due date : </label>
+                                    <input  id="taskDueDate" type="date" class=" form-control validate" placeholder="Due date for task">
                                     </div>
                                 </div>
                             </div>

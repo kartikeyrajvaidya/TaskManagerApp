@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.status import *
-
+from django.contrib.auth.mixins import (LoginRequiredMixin)
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
 
@@ -12,8 +12,7 @@ from .serializers import TaskCreateSerializer, TaskListSerializer, \
     SubTaskCreateSerializer, SubTaskListSerializer
 
 
-@permission_classes([IsAuthenticated])
-class HomePage(TemplateView):
+class HomePage(LoginRequiredMixin,TemplateView):
     template_name = 'todoApp/todoApp_home.html'
 
 
@@ -23,8 +22,10 @@ class TaskListView(APIView):
     def get(self, request):
 
         """ GET - lists all tasks of user """
-
         tasks = Task.objects.filter(user=request.user, isDeleted=False)
+        if tasks is None:
+            response_dict["message"] = "No Task For Today Enjoy"
+            return Response(response_dict, status=HTTP_404_NOT_FOUND)
         tasks_serialized = TaskListSerializer(tasks, many=True).data
         return Response(tasks_serialized)
 
@@ -187,6 +188,3 @@ class SubTaskDetailView(APIView):
         sub_task.save()
         response_dict["message"] = "SubTask deleted"
         return Response(response_dict)
-
-
-

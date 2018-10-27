@@ -23,9 +23,7 @@ class TaskListSerializer(serializers.ModelSerializer):
             'description',
             'dueDate',
             'priority',
-            
             "isCompleted",
-
             "createdDate",
             "modifiedDate",
         )
