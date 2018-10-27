@@ -8,32 +8,55 @@
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
             console.log(this.responseText);
-
             var todoList=JSON.parse(this.responseText);
 
             $.each(todoList, function (index, todo) {
               console.log(todo);
               var collapseHref = 'href="#collapse'+index+'"';
               var subTaskCount = todo.subTasks.length;
-              var subTaskLabel = '';
+              var subTaskCountLabel = '';
+              var subTaskListToDisplay = '';
               var taskCompleteMarkerAndDueDate = '';
               var title = todo.title;
               var stylePanelTitle = '';
               var stylePanelHeading = '';
+              var subTaskList = '';
+              var markTaskButton = '';
+
+
+
+              var xhttp = new XMLHttpRequest();
+              xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                      console.log(this.responseText);
+                      subTaskList=JSON.parse(this.responseText);
+                }
+              };
+              xhttp.open("GET", 'tasks/'+todo.id+'/subtasks', false);
+              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+              xhttp.send();
+
 
               if( subTaskCount > 0){
-                subTaskLabel = '<span class="label label-warning">' + subTaskCount + 'subtasks</span>'
+                subTaskCountLabel = '<span class="label label-warning">' + subTaskCount + 'subtasks</span>';
+                $.each(subTaskList, function (index, subTask) {
+                  subTaskListToDisplay += '<li>' + subTask.title+ ' : '+ subTask.description+'</li>';
+                });
+              }else{
+                subTaskListToDisplay = 'No SubTask To DisPlay';
               }
+
               if(todo.isCompleted){
                 stylePanelHeading='style="background:#e9e6e6;"';
                 stylePanelTitle = 'style="color:#807e7eda;"';
-              }
-              if(todo.isCompleted){
                 taskCompleteMarkerAndDueDate = '<span class="label label-default">Completed</span>'
                                               +'<span class="label label-default">'+todo.dueDate+'</span>';
+                markTaskButton = 'Task Done. <a class="marktask" id="undone_'+todo.id+'" href="#">Mark as Pending</a>';
+
               }else{
                 taskCompleteMarkerAndDueDate = '<span class="label label-success">Pending</span>'
                                               +'<span class="label label-success">'+todo.dueDate+'</span>';
+                markTaskButton = '<button class="btn btn-success marktask" id="done_'+todo.id+'">Mark Complete</button>';
               }
 
 
@@ -45,9 +68,15 @@
               + '<h4 class="panel-title">'
               + '<a data-toggle="collapse" data-parent="#accordion"'+ collapseHref + stylePanelTitle + '>'
               + '<strong>'+title+'</strong></a></h4></div>'
-              + '<div class="col-md-1">'+subTaskLabel+'</div>'
-              + '<div class=" row col-md-3" align="end">' + taskCompleteMarkerAndDueDate + '</div>'
-              + '</div></div></div></div>'
+              + '<div class="col-md-1">'+subTaskCountLabel+'</div>'
+              + '<div class=" row col-md-3" align="end">' + taskCompleteMarkerAndDueDate + '</div></div></div></div>'
+              + '<div id="collapse'+index+'" class="panel-collapse collapse">'
+              + '<div class="panel-body"><br>'
+              + '<ul>' + subTaskListToDisplay + '</ul><br>'
+              + '<button class="btn btn-primary addsubtask" id="'+todo.id+'" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button>'
+              + '<div class="panel-footer" align="end">'+ markTaskButton
+              + '<button class="btn btn-danger deletetask" id="'+todo.id+'"><i class="fa fa-trash" aria-hidden="true" style="font-size:18px;"></i></button>'
+              + '</div></div></div>'
               $('#accordion').append(dataForAccordion);
             });
             }
