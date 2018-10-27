@@ -11,32 +11,45 @@
 
             var todoList=JSON.parse(this.responseText);
 
-            $.each(todoList, function (i, todo) {
+            $.each(todoList, function (index, todo) {
               console.log(todo);
+              var collapseHref = 'href="#collapse'+index+'"';
+              var subTaskCount = todo.subTasks.length;
+              var subTaskLabel = '';
+              var taskCompleteMarkerAndDueDate = '';
               var title = todo.title;
-
               var stylePanelTitle = '';
-
               var stylePanelHeading = '';
 
+              if( subTaskCount > 0){
+                subTaskLabel = '<span class="label label-warning">' + subTaskCount + 'subtasks</span>'
+              }
               if(todo.isCompleted){
                 stylePanelHeading='style="background:#e9e6e6;"';
                 stylePanelTitle = 'style="color:#807e7eda;"';
               }
+              if(todo.isCompleted){
+                taskCompleteMarkerAndDueDate = '<span class="label label-default">Completed</span>'
+                                              +'<span class="label label-default">'+todo.dueDate+'</span>';
+              }else{
+                taskCompleteMarkerAndDueDate = '<span class="label label-success">Pending</span>'
+                                              +'<span class="label label-success">'+todo.dueDate+'</span>';
+              }
+
 
               dataForAccordion = '<div class="panel panel-default">'
               + '<div class="panel-heading" ' + stylePanelHeading + '>'
               + '<div class="row">'
               + '<div class="col-md-12">'
               + '<div class="col-md-8 panel2">'
-              + '<h4 class="panel-title">'+
-              + '<a data-toggle="collapse" data-parent="#accordion" '+ stylePanelTitle + '>'
-              +'<strong>'+title+'</strong></a></h4>'
-              + '</div></div></div></div></div>'
+              + '<h4 class="panel-title">'
+              + '<a data-toggle="collapse" data-parent="#accordion"'+ collapseHref + stylePanelTitle + '>'
+              + '<strong>'+title+'</strong></a></h4></div>'
+              + '<div class="col-md-1">'+subTaskLabel+'</div>'
+              + '<div class=" row col-md-3" align="end">' + taskCompleteMarkerAndDueDate + '</div>'
+              + '</div></div></div></div>'
               $('#accordion').append(dataForAccordion);
             });
-
-
             }
           };
                xhttp.open("GET", "tasks?"+storedValue, false);
@@ -82,9 +95,6 @@
               {
                   if(isValidDate(dueDate)){
                       console.log(dueDate)
-                      // var bits = dueDate.split('-');
-                      // var da = new Date(bits[0], bits[1] - 1, bits[2]);
-                      // console.log(da);
                       inputData['dueDate']= dueDate ;
                   }else{
                       $.alert("Inavlid date", "Enter valid Date")
@@ -128,79 +138,11 @@
                 var d = new Date(bits[0], bits[1] - 1, bits[2]);
                 return d && (d.getMonth() + 1) == bits[1];
             }
-
-            // document.getElementById("response_card").hidden = true;
-            // $("#get_branch_details").click(function(){
-            //     console.log("CLICKKEEEEEEEEED")
-            //     ifsc_code = document.getElementById("ifsc_code_inp").value;
-            //     console.log(ifsc_code)
-            //     var xhttp = new XMLHttpRequest();
-            //     xhttp.onreadystatechange = function() {
-            //         if (this.readyState == 4 && this.status == 200) {
-            //               console.log(this.responseText);
-            //               var res=JSON.parse(this.responseText);
-            //               // $("#response_text").attr("href", "http://"+res['short_url']);
-            //               document.getElementById("response_card").hidden = false;
-            //               document.getElementById('data_title').innerHTML=res["bank"]["name"] ;
-            //               detail_str =  "City : " + res["city"] + "<br>" + "District : " + res["district"] + "<br>"
-            //               detail_str = detail_str + "State : " + res["state"] + "<br>" + "Address : " + res["address"] + "<br>"
-            //               detail_str = detail_str + "Branch : " + res["branch"] + "<br>" + "IFSC Code: " + res["ifsc"] + "<br>"
-            //               document.getElementById('data_detail').innerHTML= detail_str ;
-            //         }else{
-            //                 document.getElementById("response_card").hidden = true;
-            //                 var res=JSON.parse(this.responseText);
-            //                 $.alert({
-            //                     title: 'Request could not be completed!',
-            //                     content: res['message'] + "<br> Response Status : " + this.status,
-            //                 });
-            //         }
-            //     };
-            //     // var parm='ifsc_code=' + long_url;
-            //     xhttp.open("GET", "/app/branch/"+ifsc_code, false);
-            //     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            //     xhttp.send();
-            // });
-            //  $("#get_all_branches").click(function(){
-            //     console.log("CLICKKEEEEEEEEED")
-            //     city = document.getElementById("city").value;
-            //     console.log(city)
-            //     bank_name = document.getElementById("bank_name").value;
-            //     console.log(bank_name)
-            //     var xhttp = new XMLHttpRequest();
-            //     xhttp.onreadystatechange = function() {
-            //         if (this.readyState == 4 && this.status == 200) {
-            //             console.log(this.responseText);
-            //             document.getElementById("all_branches_list").hidden = false;
-            //             var res=JSON.parse(this.responseText);
-            //             var response_html_content = "";
-            //             $.each(res, function (i, v) {
-            //                                 //list += '<li class="page" id="'+i+'">' + '<a>' + v.name + '</a></li>'
-            //                 console.log(v);
-            //                 var item_details = "Branch : " + v['branch'] + "<br>" + "IFSC Code : " + v['ifsc'] + "<br>"  ;            //,, state
-            //                 item_details = item_details + "District : " + v['district'] + "<br>" + "Address : " + v['address'] + "<br>";
-            //                 var list_item= '<li class="list-group-item">' + item_details + '</li>' ;
-            //                 response_html_content = response_html_content + list_item;
-            //             });
-            //             document.getElementById('all_branches_list').innerHTML= response_html_content ;
-            //         }else{
-            //             document.getElementById("all_branches_list").hidden = true;
-            //             var res=JSON.parse(this.responseText);
-            //             $.alert({
-            //                 title: 'Request could not be completed!',
-            //                 content: res['message'] + "<br> Response Status : " + this.status,
-            //             });
-            //         }
-            //     };
-            //     var param_string='bank_name=' + bank_name + '&city=' + city;
-            //     xhttp.open("GET", "/app/branches/?"+param_string , false);
-            //     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            //     xhttp.send();
-            //  });
          });
 
 
 </script>
-  <div class="container">
+<div class="container">
 			   {% block todo_content %}{% endblock %}
-  </div>
+</div>
 {% endblock %}

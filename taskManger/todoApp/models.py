@@ -60,7 +60,7 @@ class Task(BaseTask):
 
 class SubTask(BaseTask):
 
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    task = models.ForeignKey(Task,related_name='subTasks', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title

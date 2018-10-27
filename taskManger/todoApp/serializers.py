@@ -23,9 +23,10 @@ class TaskListSerializer(serializers.ModelSerializer):
             'description',
             'dueDate',
             'priority',
-            "isCompleted",
-            "createdDate",
-            "modifiedDate",
+            'isCompleted',
+            'createdDate',
+            'modifiedDate',
+            'subTasks'
         )
         model = Task
 
@@ -52,9 +53,8 @@ class SubTaskListSerializer(serializers.ModelSerializer):
             'title',
             'description',
             'isCompleted',
-
-            "createdDate",
-            "modifiedDate",
+            'createdDate',
+            'modifiedDate',
 
         )
         model = SubTask
