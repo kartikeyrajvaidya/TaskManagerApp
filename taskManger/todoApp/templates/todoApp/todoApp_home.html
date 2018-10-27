@@ -39,76 +39,9 @@
 </div>
 <!-- -------------- accordion below ------------- -->
 
-  {% if todo_list %}
-
   <div class="panel-group" id="accordion">
-
-      {% for todo in todo_list %}
-
-      <div class="panel panel-default" id="hey{{forloop.counter}}">
-          <div class="panel-heading" {% if todo.is_completed %} style="background:#e9e6e6;" {% endif %} >
-              <div class="row">
-              <div class="col-md-12">
-                  <div class="col-md-8 panel2" id="hey{{forloop.counter}}_title">
-                     <h4 class="panel-title"  >
-                      <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{forloop.counter}}"  {% if todo.is_completed %} style="color:#807e7eda;" {% endif %}   >
-                          <strong>{{ todo.title }}</strong>
-                      </a>
-
-                     </h4>
-
-                  </div>
-                  <div class="col-md-1">
-                      {% if todo.subtask_set.all %}
-                      <span class="label label-warning">{{todo.subtask_set.count}} subtasks</span>
-                      {% endif %}
-                  </div>
-                  <div class=" row col-md-3" align="end">
-                      {% if todo.is_completed %}
-                      <span class="label label-default">Completed</span>
-                      <span class="label label-default">{{ todo.due_date }}</span>
-                      {% else %}
-                      <span class="label label-success">Pending</span>
-                      <span class="label label-success">{{ todo.due_date }}</span>
-                      {% endif %}
-                  </div>
-              </div>
-              </div>
-          </div>
-
-          <div id="collapse{{forloop.counter}}" class="panel-collapse collapse">
-              <div class="panel-body">
-                  {% if todo.subtask_set.all %}
-                  <ul>
-                     {% for subt in todo.subtask_set.all %}
-                     <li>{{subt.title}}</li>
-                     {% endfor %}
-                  </ul>
-                  {% else %}
-                  <p>No sub-tasks to show.</p>
-                  {% endif %}
-                  <button class="btn btn-sm addsubtask" id="{{todo.id}}" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button>
-              </div>
-              <div class="panel-footer" align="end">
-                  {% if not todo.is_completed %}
-                  <button class="btn btn-success marktask" id="done_{{todo.id}}">Mark Complete</button>
-                  {% else %}
-                  Task Done. <a class="marktask" id="undone_{{todo.id}}" href="#">Mark as Pending</a>
-                  {% endif %}
-                  <button class="btn btn-danger deletetask" id="{{todo.id}}"><i class="fa fa-trash" aria-hidden="true" style="font-size:18px;"></i></button>
-
-
-              </div>
-
-          </div>
-      </div>
-      <br>
-
-  {% endfor %}
   </div>
-  {% else %}
-  <p>No tasks to do.</p>
-  {% endif %}
+
 
 <!-- modal add task here  -->
 
