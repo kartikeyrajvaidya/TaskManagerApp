@@ -81,28 +81,26 @@
             });
             }
           };
-               xhttp.open("GET", "tasks?"+storedValue, false);
-               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-               xhttp.send();
+          xhttp.open("GET", "tasks?filter="+storedValue, false);
+          xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          xhttp.send();
 
            $(".dropdown-item").click(function(){
                 console.log("dropdown clickEEEEEEEEEDDD");
                 var text = $(this).text();
                 console.log(text);
                 sessionStorage.setItem('dropdownselected', text );
-                $('#something').click(function() {
-                    location.reload();
-                });
+                location.reload();
             });
 
             $("#add_task_submit").click(function(){
 
-              inputData= {}
+              inputTaskData= {}
               flag = 1
               if(document.getElementById("taskTitle").value != "")
               {
                   console.log(document.getElementById("taskTitle").value)
-                  inputData["title"]= document.getElementById("taskTitle").value;
+                  inputTaskData["title"]= document.getElementById("taskTitle").value;
 
               }else{
                   $.alert('Please enter a title', 'Invalid Input');
@@ -112,7 +110,7 @@
               if(document.getElementById("taskDescription").value != "")
               {
                   console.log(document.getElementById("taskDescription").value)
-                  inputData["description"]= document.getElementById("taskDescription").value;
+                  inputTaskData["description"]= document.getElementById("taskDescription").value;
 
               }else{
                   $.alert('Please enter a Description', 'Invalid Input');
@@ -124,7 +122,7 @@
               {
                   if(isValidDate(dueDate)){
                       console.log(dueDate)
-                      inputData['dueDate']= dueDate ;
+                      inputTaskData['dueDate']= dueDate ;
                   }else{
                       $.alert("Inavlid date", "Enter valid Date")
                       flag=0;
@@ -154,7 +152,7 @@
                       }
                     }
                   };
-                  var parm='title='+ inputData['title']+ '&description=' + inputData['description'] + '&dueDate=' + inputData['dueDate'];
+                  var parm='title='+ inputTaskData['title']+ '&description=' + inputTaskData['description'] + '&dueDate=' + inputTaskData['dueDate']+ '&csrfmiddlewaretoken=' + '{{csrf_token}}';
                   xhttp.open("POST", "tasks/", false);
                   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                   xhttp.send(parm);
@@ -192,9 +190,10 @@
 
                   }
                   };
+                  var parm='&csrfmiddlewaretoken=' + '{{csrf_token}}';
                   xhttp.open("DELETE", 'tasks/'+task_id, false);
                   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-                  xhttp.send();
+                  xhttp.send(parm);
           });
 
           $(".marktask").click(function(){
@@ -244,6 +243,65 @@
           xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
           xhttp.send(parm);
           });
+
+          $(".addsubtask").click(function(){
+            console.log($(this).attr("id"))
+            document.getElementById("taskIdForSubtask").value = $(this).attr("id");
+          });
+
+          $(addSubTaskSubmit).click(function(){
+                var inputSubTaskData ={};
+                flag = 0;
+                if(document.getElementById("subTaskTitle").value != "")
+                {
+                    console.log(document.getElementById("subTaskTitle").value)
+                    inputSubTaskData["title"]= document.getElementById("subTaskTitle").value;
+
+                }else{
+                    $.alert('Please enter a title', 'Invalid Input');
+                    flag=0;
+                }
+
+                if(document.getElementById("subTaskDescription").value != "")
+                {
+                    console.log(document.getElementById("subTaskDescription").value)
+                    inputSubTaskData["description"]= document.getElementById("subTaskDescription").value;
+
+                }else{
+                    $.alert('Please enter a Description', 'Invalid Input');
+                    flag=0;
+                }
+                if( flag == 0){
+                    taskIdForSubtask = document.getElementById("taskIdForSubtask").value ;
+                    var xhttp = new XMLHttpRequest();
+                    xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        console.log(this.responseText);
+                        var res=JSON.parse(this.responseText);
+                        if(res["message"] == "OK"){
+                            $.confirm({
+                                title: 'Sub tasks Added!',
+                                content: 'Your sub-tasks is added successfully!',
+                                buttons: {
+                                    Okay: function () {
+                                        location.reload(true);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    };
+                    var parm='task_id='+ taskIdForSubtask +'&title='+inputSubTaskData['title']+ '&description='+inputSubTaskData['description'] + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+                    xhttp.open("POST", "tasks/"+taskIdForSubtask+'/subtasks/', false);
+                    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    xhttp.send(parm);
+                }
+                else{
+                    console.log("WRAAAAAAAAAANG");
+
+                }
+            });
+
 });
 </script>
 <div class="container">

@@ -11,6 +11,8 @@ from .models import Task, SubTask
 from .serializers import TaskCreateSerializer, TaskListSerializer, \
     SubTaskCreateSerializer, SubTaskListSerializer
 from django.views.decorators.csrf import csrf_exempt
+import datetime
+from django.utils.deprecation import MiddlewareMixin
 
 
 class HomePage(LoginRequiredMixin,TemplateView):
@@ -28,7 +30,29 @@ class TaskListView(APIView):
 
     def get(self, request):
         """ GET - lists all tasks of user """
-        tasks = Task.objects.filter(user=request.user, isDeleted=False)
+
+        response_dict = {}
+
+        filter_type = request.GET.get("filter", "")
+        today = datetime.date.today()
+        start_week =  today - datetime.timedelta(today.weekday())
+        end_week = start_week + datetime.timedelta(6)
+        start_nextweek =  end_week + datetime.timedelta(1)
+        end_nextweek = start_nextweek + datetime.timedelta(6)
+        print(filter_type)
+
+        if filter_type == "All":
+            tasks = Task.objects.filter(user=request.user, isDeleted=False)
+        elif filter_type == "This Week":
+            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate__range=[start_week, end_week])
+        elif filter_type == "Next Week":
+            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate__range=[start_nextweek, end_nextweek])
+        elif filter_type == "Overdue":
+            tasks = Task.objects.filter(user=request.user, isDeleted=False, isCompleted=False, dueDate__lt=today)
+        else:
+            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate=today)
+
+
         if tasks is None:
             response_dict["message"] = "No Task For Today Enjoy"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
@@ -105,14 +129,15 @@ class TaskDetailView(APIView):
     def delete(self, request, task_id):
 
         """ DELETE - soft delete a task """
-
         response_dict = {}
         task = Task.objects.filter(id=task_id, isDeleted=False).first()
+        print(task)
         if task is None:
             response_dict["message"] = "task with given id not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         task.softDelete()
         task.save()
+        print("Done")
         response_dict["message"] = "Task deleted"
         return Response(response_dict)
 
@@ -136,11 +161,14 @@ class SubTaskListView(APIView):
         response_dict = {}
         task = get_object_or_404(Task, id=task_id)
         subtask_serializer = SubTaskCreateSerializer(data=request.data)
+        print(subtask_serializer)
         if subtask_serializer.is_valid():
+            print('Valid')
             subtask = subtask_serializer.save(task=task)
             response_dict["message"] = "OK"
             response_dict["id"] = subtask.id
             return Response(response_dict)
+        print('NotValid')
         response_dict["message"] = "FAIL"
         response_dict["errors"] = subtask_serializer.errors
         return Response(response_dict, status=HTTP_400_BAD_REQUEST)
@@ -208,3 +236,8 @@ class SubTaskDetailView(APIView):
         sub_task.save()
         response_dict["message"] = "SubTask deleted"
         return Response(response_dict)
+
+
+class DisableCSRF(MiddlewareMixin):
+    def process_request(self, request):
+        setattr(request, '_dont_enforce_csrf_checks', True)

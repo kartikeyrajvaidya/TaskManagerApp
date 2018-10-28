@@ -24,11 +24,11 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="tasks?filter=All">All</a></li>
-                        <li><a class="dropdown-item" href="tasks?filter=today">Today</a></li>
-                        <li><a class="dropdown-item" href="tasks?filter=overdue">Overdue</a></li>
-                        <li><a class="dropdown-item" href="tasks?filter=this_week">This week</a></li>
-                        <li><a class="dropdown-item" href="tasks?filter=next_week">Next week</a></li>
+                        <li><a class="dropdown-item">All</a></li>
+                        <li><a class="dropdown-item">Today</a></li>
+                        <li><a class="dropdown-item">Overdue</a></li>
+                        <li><a class="dropdown-item">This Week</a></li>
+                        <li><a class="dropdown-item">Next Week</a></li>
                     </ul>
             </div>
           </div>
@@ -108,14 +108,14 @@
                 </div>
                 <div class="modal-body">
                       <div class="input_fields_wrap">
-                          Title :<input type="text" name="answer[]" class="field-long form-control" placeholder="Enter sub-task ..." maxlength="198" style="margin-bottom: 4px;"/>
-                          Description :<input type="text" name="subTaskDescrition" class="field-long form-control" placeholder="Enter subTask Description ..." maxlength="198" style="margin-bottom: 4px;"/>
+                          Title :<input type="text" id="subTaskTitle" class="field-long form-control" placeholder="Enter sub-task ..." maxlength="198" style="margin-bottom: 4px;"/>
+                          Description :<input type="text" id="subTaskDescription" class="field-long form-control" placeholder="Enter subTask Description ..." maxlength="198" style="margin-bottom: 4px;"/>
                       </div>
                       <br>
-                      <input id="task_id_for_subtask" type="text" class="validate" hidden>
+                      <input id="taskIdForSubtask" type="text" class="validate" hidden>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="add_sub_task_submit" class="btn btn-primary">Add</button>
+                        <button type="button" id="addSubTaskSubmit" class="btn btn-primary">Add</button>
                     </div>
                 </div>
         </div>
