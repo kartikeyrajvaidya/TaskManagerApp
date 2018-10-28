@@ -22,11 +22,6 @@ class HomePage(LoginRequiredMixin,TemplateView):
 @permission_classes([IsAuthenticated])
 class TaskListView(APIView):
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(TaskListView, self).dispatch(request, *args, **kwargs)
-
-
 
     def get(self, request):
         """ GET - lists all tasks of user """
@@ -78,12 +73,6 @@ class TaskListView(APIView):
 @permission_classes([IsAuthenticated])
 class TaskDetailView(APIView):
 
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(TaskDetailView, self).dispatch(request, *args, **kwargs)
-
-
-
     def get(self, request, task_id):
 
         """ GET - show a task by id """
@@ -133,12 +122,12 @@ class TaskDetailView(APIView):
         task = Task.objects.filter(id=task_id, isDeleted=False).first()
         print(task)
         if task is None:
-            response_dict["message"] = "task with given id not found"
+            response_dict["message"] = "OK"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         task.softDelete()
         task.save()
         print("Done")
-        response_dict["message"] = "Task deleted"
+        response_dict["message"] = "OK"
         return Response(response_dict)
 
 
@@ -175,10 +164,6 @@ class SubTaskListView(APIView):
 
 
 class SubTaskDetailView(APIView):
-
-    @method_decorator(csrf_exempt)
-    def dispatch(self, request, *args, **kwargs):
-        return super(SubTaskDetailView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, task_id, subtask_id):
 
@@ -222,7 +207,7 @@ class SubTaskDetailView(APIView):
         response_dict["errors"] = sub_task_serializer.errors
         return Response(response_dict, status=HTTP_400_BAD_REQUEST)
 
-    @csrf_exempt
+
     def delete(self, request, task_id, subtask_id):
 
         """ DELETE - soft delete a subtask """
@@ -236,8 +221,3 @@ class SubTaskDetailView(APIView):
         sub_task.save()
         response_dict["message"] = "SubTask deleted"
         return Response(response_dict)
-
-
-class DisableCSRF(MiddlewareMixin):
-    def process_request(self, request):
-        setattr(request, '_dont_enforce_csrf_checks', True)
