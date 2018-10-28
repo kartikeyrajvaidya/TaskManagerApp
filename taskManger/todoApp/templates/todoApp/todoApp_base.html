@@ -162,8 +162,9 @@
           });
           function isValidDate(s) {
                 var bits = s.split('-');
-                var d = new Date(bits[0], bits[1] - 1, bits[2]);
-                return d && (d.getMonth() + 1) == bits[1];
+                var today = new Date()
+                today.getMonth()+1;
+                return (today.getDate()<= bits[2]) && (today.getMonth() + 1) <= bits[1];
             }
             $(".deletetask").click(function(){
 
