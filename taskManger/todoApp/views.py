@@ -6,10 +6,11 @@ from rest_framework.status import *
 from django.contrib.auth.mixins import (LoginRequiredMixin)
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
-
+from django.utils.decorators import method_decorator
 from .models import Task, SubTask
 from .serializers import TaskCreateSerializer, TaskListSerializer, \
     SubTaskCreateSerializer, SubTaskListSerializer
+from django.views.decorators.csrf import csrf_exempt
 
 
 class HomePage(LoginRequiredMixin,TemplateView):
@@ -19,8 +20,13 @@ class HomePage(LoginRequiredMixin,TemplateView):
 @permission_classes([IsAuthenticated])
 class TaskListView(APIView):
 
-    def get(self, request):
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TaskListView, self).dispatch(request, *args, **kwargs)
 
+
+
+    def get(self, request):
         """ GET - lists all tasks of user """
         tasks = Task.objects.filter(user=request.user, isDeleted=False)
         if tasks is None:
@@ -48,6 +54,12 @@ class TaskListView(APIView):
 @permission_classes([IsAuthenticated])
 class TaskDetailView(APIView):
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TaskDetailView, self).dispatch(request, *args, **kwargs)
+
+
+
     def get(self, request, task_id):
 
         """ GET - show a task by id """
@@ -59,6 +71,7 @@ class TaskDetailView(APIView):
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         task_serialized = TaskListSerializer(task).data
         return Response(task_serialized)
+
 
     def put(self, request, task_id):
 
@@ -87,6 +100,7 @@ class TaskDetailView(APIView):
         response_dict["message"] = "FAIL"
         response_dict["errors"] = task_serializer.errors
         return Response(response_dict, status=HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, task_id):
 
@@ -134,6 +148,10 @@ class SubTaskListView(APIView):
 
 class SubTaskDetailView(APIView):
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(SubTaskDetailView, self).dispatch(request, *args, **kwargs)
+
     def get(self, request, task_id, subtask_id):
 
         """ GET - show subtask in detail """
@@ -146,6 +164,7 @@ class SubTaskDetailView(APIView):
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         sub_task_serialized = SubTaskListSerializer(sub_task).data
         return Response(sub_task_serialized)
+
 
     def put(self, request, task_id, subtask_id):
 
@@ -175,6 +194,7 @@ class SubTaskDetailView(APIView):
         response_dict["errors"] = sub_task_serializer.errors
         return Response(response_dict, status=HTTP_400_BAD_REQUEST)
 
+    @csrf_exempt
     def delete(self, request, task_id, subtask_id):
 
         """ DELETE - soft delete a subtask """

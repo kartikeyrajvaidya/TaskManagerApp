@@ -73,7 +73,7 @@
               + '<div id="collapse'+index+'" class="panel-collapse collapse">'
               + '<div class="panel-body"><br>'
               + '<ul>' + subTaskListToDisplay + '</ul><br>'
-              + '<button class="btn btn-primary addsubtask" id="'+todo.id+'" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button>'
+              + '<button class="btn btn-primary addsubtask" id="'+todo.id+'" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button></div>'
               + '<div class="panel-footer" align="end">'+ markTaskButton
               + '<button class="btn btn-danger deletetask" id="'+todo.id+'"><i class="fa fa-trash" aria-hidden="true" style="font-size:18px;"></i></button>'
               + '</div></div></div>'
@@ -154,7 +154,7 @@
                       }
                     }
                   };
-                  var parm='title='+ inputData['title']+ '&description=' + inputData['description'] + '&dueDate=' + inputData['dueDate'] + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+                  var parm='title='+ inputData['title']+ '&description=' + inputData['description'] + '&dueDate=' + inputData['dueDate'];
                   xhttp.open("POST", "tasks/", false);
                   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                   xhttp.send(parm);
@@ -167,9 +167,84 @@
                 var d = new Date(bits[0], bits[1] - 1, bits[2]);
                 return d && (d.getMonth() + 1) == bits[1];
             }
-         });
+            $(".deletetask").click(function(){
 
+              var task_id = $(this).attr("id");
+              console.log(task_id + "TOOO BEE DELETDDDDD")
 
+              var xhttp = new XMLHttpRequest();
+                  xhttp.onreadystatechange = function() {
+                  if (this.readyState == 4 && this.status == 200) {
+                      console.log(this.responseText);
+                      var res=JSON.parse(this.responseText);
+                      if(res["status"] == "OK"){
+                          $('#add_task_modal').modal('hide');
+                          $.confirm({
+                              title: 'Task Deleted!',
+                              content: 'Your task was deleted successfully!',
+                              buttons: {
+                                  Okay: function () {
+                                      location.reload(true);
+                                  }
+                              }
+                          });
+                      }
+
+                  }
+                  };
+                  xhttp.open("DELETE", 'tasks/'+task_id, false);
+                  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                  xhttp.send();
+          });
+
+          $(".marktask").click(function(){
+
+            var view_id = $(this).attr("id")
+            console.log("MARK TASK VIEW ID "+ view_id)
+
+            var action = view_id.split("_")[0]
+            var task_id = view_id.split("_")[1]
+            console.log("MARK TASK ID "+ task_id)
+            var is_completed = "FALSE"
+            if(action=="done"){
+                is_completed = "TRUE"
+            }
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            var res=JSON.parse(this.responseText);
+            if(res["message"] == "OK"){
+            if(is_completed=="TRUE"){
+              $.confirm({
+                  title: 'Task marked as Completed!',
+                  content: 'Your task was marked completed successfully!',
+                  buttons: {
+                    Okay: function () {
+                      location.reload(true);
+                    }
+                  }
+                });
+              }else{
+                  $.confirm({
+                    title: 'Task marked as Pending!',
+                    content: 'Your task was marked as pending !',
+                    buttons: {
+                      Okay: function () {
+                        location.reload(true);
+                      }
+                  }
+                });
+              }
+            }
+            }
+          };
+          var parm='id='+ task_id +'&is_completed='+ is_completed + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+          xhttp.open("PUT", 'tasks/'+task_id+'/', false);
+          xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          xhttp.send(parm);
+          });
+});
 </script>
 <div class="container">
 			   {% block todo_content %}{% endblock %}
