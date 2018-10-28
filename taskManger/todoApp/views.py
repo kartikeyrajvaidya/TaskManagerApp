@@ -92,11 +92,15 @@ class TaskDetailView(APIView):
 
         response_dict = {}
         task = Task.objects.filter(id=task_id, isDeleted=False).first()
+        print(task)
         if task is None:
             response_dict["message"] = "task with given id not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         request_dict = request.data
-        if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 1:
+        print(request_dict.keys())
+        print(len(request_dict.keys()))
+        if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 2:
+            print('Inside')
             if request_dict["isCompleted"] == "TRUE":
                 task.markComplete()
             else:
@@ -107,9 +111,11 @@ class TaskDetailView(APIView):
             return Response(response_dict)
         task_serializer = TaskCreateSerializer(instance=task, data=request_dict)
         if task_serializer.is_valid():
+            print('Valid')
             task_serializer.save()
             response_dict["message"] = "OK"
             return Response(response_dict)
+        print('Not Valid')
         response_dict["message"] = "FAIL"
         response_dict["errors"] = task_serializer.errors
         return Response(response_dict, status=HTTP_400_BAD_REQUEST)

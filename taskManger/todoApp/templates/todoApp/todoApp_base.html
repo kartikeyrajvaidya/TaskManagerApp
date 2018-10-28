@@ -237,7 +237,7 @@
             }
             }
           };
-          var parm='id='+ task_id +'&is_completed='+ is_completed + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+          var parm='&isCompleted='+ is_completed + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
           xhttp.open("PUT", 'tasks/'+task_id+'/', false);
           xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
           xhttp.send(parm);
