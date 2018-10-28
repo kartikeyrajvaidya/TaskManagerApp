@@ -191,7 +191,7 @@
                   }
                   };
                   var parm='&csrfmiddlewaretoken=' + '{{csrf_token}}';
-                  xhttp.open("DELETE", 'tasks/'+task_id, false);
+                  xhttp.open("DELETE", 'tasks/'+task_id+'/', false);
                   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                   xhttp.send(parm);
           });
