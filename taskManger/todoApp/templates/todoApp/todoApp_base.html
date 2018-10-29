@@ -21,6 +21,8 @@
               var stylePanelTitle = '';
               var stylePanelHeading = '';
               var markTaskButton = '';
+              var idForPanel = 'id="hey' + index + '"';
+              var idForPanel2 = 'id="hey'+ index + '_title"';
 
 
               if( subTaskCount > 0){
@@ -46,11 +48,11 @@
               }
 
 
-              dataForAccordion = '<div class="panel panel-default">'
+              dataForAccordion = '<div class="panel panel-default"' + idForPanel + '>'
               + '<div class="panel-heading" ' + stylePanelHeading + '>'
               + '<div class="row">'
               + '<div class="col-md-12">'
-              + '<div class="col-md-8 panel2">'
+              + '<div class="col-md-8 panel2"' + idForPanel2 + '>'
               + '<h4 class="panel-title">'
               + '<a data-toggle="collapse" data-parent="#accordion"'+ collapseHref + stylePanelTitle + '>'
               + '<strong>'+title+'</strong></a></h4></div>'
@@ -287,6 +289,21 @@
 
                 }
             });
+            $('#search_input').on('change keyup paste click', function () {
+                searchTerm = $(this).val();
+                $('#accordion > .panel').each(function () {
+                  panelContainerId = '#' + $(this).attr('id');
+                  var titleText = $(panelContainerId +'_title').text();
+                  if(titleText.toLowerCase().search(searchTerm.toLowerCase())==-1)
+                  {
+                      $(panelContainerId).hide();
+                  }
+                  else
+                  {
+                      $(panelContainerId).show();
+                  }
+                });
+              });
 
 });
 </script>
