@@ -7,11 +7,11 @@
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
           if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
+            //console.log(this.responseText);
             var todoList=JSON.parse(this.responseText);
 
             $.each(todoList, function (index, todo) {
-              console.log(todo);
+              //console.log(todo);
               var collapseHref = 'href="#collapse'+index+'"';
               var subTaskCount = todo.subTasks.length;
               var subTaskCountLabel = '';
@@ -86,9 +86,9 @@
           xhttp.send();
 
            $(".dropdown-item").click(function(){
-                console.log("dropdown clickEEEEEEEEEDDD");
+                //console.log("dropdown clickEEEEEEEEEDDD");
                 var text = $(this).text();
-                console.log(text);
+                //console.log(text);
                 sessionStorage.setItem('dropdownselected', text );
                 location.reload();
             });
@@ -99,7 +99,7 @@
               flag = 1
               if(document.getElementById("taskTitle").value != "")
               {
-                  console.log(document.getElementById("taskTitle").value)
+                //  console.log(document.getElementById("taskTitle").value)
                   inputTaskData["title"]= document.getElementById("taskTitle").value;
 
               }else{
@@ -109,7 +109,7 @@
 
               if(document.getElementById("taskDescription").value != "")
               {
-                  console.log(document.getElementById("taskDescription").value)
+                  //console.log(document.getElementById("taskDescription").value)
                   inputTaskData["description"]= document.getElementById("taskDescription").value;
 
               }else{
@@ -121,7 +121,7 @@
               if(dueDate != "")
               {
                   if(isValidDate(dueDate)){
-                      console.log(dueDate)
+                      //console.log(dueDate)
                       inputTaskData['dueDate']= dueDate ;
                   }else{
                       $.alert("Inavlid date", "Enter valid Date")
@@ -136,7 +136,7 @@
                   var xhttp = new XMLHttpRequest();
                   xhttp.onreadystatechange = function() {
                   if (this.readyState == 4 && this.status == 200) {
-                      console.log(this.responseText);
+                      //console.log(this.responseText);
                       var res=JSON.parse(this.responseText);
                       if(res["message"] == "OK"){
                           $('#add_task_modal').modal('hide');
@@ -174,12 +174,12 @@
             $(".deletetask").click(function(){
 
               var task_id = $(this).attr("id");
-              console.log(task_id + "TOOO BEE DELETDDDDD")
+              //console.log(task_id + "TOOO BEE DELETDDDDD")
 
               var xhttp = new XMLHttpRequest();
                   xhttp.onreadystatechange = function() {
                   if (this.readyState == 4 && this.status == 200) {
-                      console.log(this.responseText);
+                      //console.log(this.responseText);
                       var res=JSON.parse(this.responseText);
                       if(res["message"] == "OK"){
                           $.confirm({
@@ -204,11 +204,11 @@
           $(".marktask").click(function(){
 
             var view_id = $(this).attr("id")
-            console.log("MARK TASK VIEW ID "+ view_id)
+            //console.log("MARK TASK VIEW ID "+ view_id)
 
             var action = view_id.split("_")[0]
             var task_id = view_id.split("_")[1]
-            console.log("MARK TASK ID "+ task_id)
+            //console.log("MARK TASK ID "+ task_id)
             var is_completed = "FALSE"
             if(action=="done"){
                 is_completed = "TRUE"
@@ -216,7 +216,7 @@
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-            console.log(this.responseText);
+            //console.log(this.responseText);
             var res=JSON.parse(this.responseText);
             if(res["message"] == "OK"){
             if(is_completed=="TRUE"){
@@ -250,12 +250,12 @@
           });
 
           $(".addalert").click(function(){
-            console.log($(this).attr("id"))
+            //console.log($(this).attr("id"))
             document.getElementById("taskIdForAlert").value = $(this).attr("id");
           });
 
           $(".addsubtask").click(function(){
-            console.log($(this).attr("id"))
+            //console.log($(this).attr("id"))
             document.getElementById("taskIdForSubtask").value = $(this).attr("id");
           });
 
@@ -263,7 +263,7 @@
             inputAlertData = {};
             if(document.getElementById("hours_befor_task").value != '')
             {
-                console.log(document.getElementById("hours_befor_task").value)
+                //console.log(document.getElementById("hours_befor_task").value)
                 inputAlertData["hours_before"]= document.getElementById("hours_befor_task").value;
 
             }else{
@@ -274,7 +274,7 @@
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText);
+                //console.log(this.responseText);
                 var res=JSON.parse(this.responseText);
                 if(res["message"] == "OK"){
                     $.confirm({
@@ -298,15 +298,15 @@
           });
 
           $(".marksubtask").click(function(){
-               console.log($(this).attr("id"))
+               //console.log($(this).attr("id"))
 
                var view_id = $(this).attr("id")
-               console.log("MARK SUBBBTASK VIEW ID "+ view_id)
+               //console.log("MARK SUBBBTASK VIEW ID "+ view_id)
 
                var action = view_id.split("_")[0]
                var sub_task_id = view_id.split("_")[1]
                var task_id = view_id.split("_")[2]
-               console.log("MARK SUBBTASK ID "+ task_id)
+              // console.log("MARK SUBBTASK ID "+ task_id)
 
                var is_completed = "FALSE"
                if(action=="subdone"){
@@ -317,7 +317,7 @@
                var xhttp = new XMLHttpRequest();
                xhttp.onreadystatechange = function() {
                if (this.readyState == 4 && this.status == 200) {
-                   console.log(this.responseText);
+                  // console.log(this.responseText);
                    var res=JSON.parse(this.responseText);
                    if(res["message"] == "OK"){
                        if(is_completed=="TRUE"){
@@ -361,7 +361,7 @@
                 flag = 0;
                 if(document.getElementById("subTaskTitle").value != "")
                 {
-                    console.log(document.getElementById("subTaskTitle").value)
+                    //console.log(document.getElementById("subTaskTitle").value)
                     inputSubTaskData["title"]= document.getElementById("subTaskTitle").value;
 
                 }else{
@@ -371,7 +371,7 @@
 
                 if(document.getElementById("subTaskDescription").value != "")
                 {
-                    console.log(document.getElementById("subTaskDescription").value)
+                    //console.log(document.getElementById("subTaskDescription").value)
                     inputSubTaskData["description"]= document.getElementById("subTaskDescription").value;
 
                 }else{
@@ -383,7 +383,7 @@
                     var xhttp = new XMLHttpRequest();
                     xhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
-                        console.log(this.responseText);
+                      //  console.log(this.responseText);
                         var res=JSON.parse(this.responseText);
                         if(res["message"] == "OK"){
                             $.confirm({
@@ -404,7 +404,7 @@
                     xhttp.send(parm);
                 }
                 else{
-                    console.log("WRAAAAAAAAAANG");
+                    //console.log("WRAAAAAAAAAANG");
 
                 }
             });
