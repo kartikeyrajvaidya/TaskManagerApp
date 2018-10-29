@@ -23,10 +23,14 @@
               var markTaskButton = '';
               var idForPanel = 'id="hey' + index + '"';
               var idForPanel2 = 'id="hey'+ index + '_title"';
+              var buttonDisabled = '';
 
 
+              if(todo.alert_enabled){
+                buttonDisabled = 'disabled';
+              }
               if( subTaskCount > 0){
-                subTaskCountLabel = '<span class="label label-warning">' + subTaskCount + 'subtasks</span>';
+                subTaskCountLabel = '<span class="label label-warning">' + subTaskCount + '<b>&nbsp&nbsp&nbspSubtasks</b></span>';
                 $.each(todo.subTasks, function (index, subTask) {
                   subTaskListToDisplay += '<li>' + subTask.title+ ' : '+ subTask.description+'</li>';
                 });
@@ -35,16 +39,18 @@
               }
 
               if(todo.isCompleted){
-                stylePanelHeading='style="background:#e9e6e6;"';
-                stylePanelTitle = 'style="color:#807e7eda;"';
-                taskCompleteMarkerAndDueDate = '<span class="label label-default">Completed</span>'
-                                              +'<span class="label label-default">'+todo.dueDate+'</span>';
-                markTaskButton = 'Task Done. <a class="marktask" id="undone_'+todo.id+'" href="#">Mark as Pending</a>';
+                stylePanelHeading='style="background:#e4ffe2;"';
+                stylePanelTitle = 'style="color:#000000;"';
+                taskCompleteMarkerAndDueDate = '<span class="label label-success">Completed</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
+                                              +'<span class="label label-success">'+todo.dueDate+'</span>';
+                markTaskButton = '<span class="fa fa-check fa-2x">&nbsp&nbsp&nbsp&nbsp</span></i><button class="btn btn-warning marktask" id="undone_'+todo.id+'" href="#">Mark as Pending</button>&nbsp&nbsp&nbsp&nbsp';
 
               }else{
-                taskCompleteMarkerAndDueDate = '<span class="label label-success">Pending</span>'
-                                              +'<span class="label label-success">'+todo.dueDate+'</span>';
-                markTaskButton = '<button class="btn btn-success marktask" id="done_'+todo.id+'">Mark Complete</button>';
+                stylePanelHeading='style="background:#ffc1c1;"';
+                stylePanelTitle = 'style="color:#000000;"';
+                taskCompleteMarkerAndDueDate = '<span class="label label-danger">Pending</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
+                                              +'<span class="label label-danger">'+todo.dueDate+'</span>';
+                markTaskButton = '<span class="fa fa-clock-o fa-2x"></span>&nbsp&nbsp&nbsp&nbsp<button class="btn btn-success marktask" id="done_'+todo.id+'">Mark Complete</button>&nbsp&nbsp&nbsp&nbsp';
               }
 
 
@@ -63,6 +69,7 @@
               + '<ul>' + subTaskListToDisplay + '</ul><br>'
               + '<button class="btn btn-primary addsubtask" id="'+todo.id+'" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button></div>'
               + '<div class="panel-footer" align="end">'+ markTaskButton
+              + '<button class="btn btn-primary addalert" id="'+todo.id+'" data-toggle="modal" data-target="#add_alert_for_task_modal"'+buttonDisabled+'>Add Alert Fot Tasks</button>&nbsp&nbsp&nbsp&nbsp&nbsp'
               + '<button class="btn btn-danger deletetask" id="'+todo.id+'"><i class="fa fa-trash" aria-hidden="true" style="font-size:18px;"></i></button>'
               + '</div></div></div>'
               $('#accordion').append(dataForAccordion);
@@ -152,7 +159,12 @@
                 var bits = s.split('-');
                 var today = new Date()
                 today.getMonth()+1;
-                return (today.getDate()<= bits[2]) && (today.getMonth() + 1) <= bits[1];
+                if( (today.getMonth() + 1) <  bits[1] ){
+                  return true;
+                }else if( (today.getMonth() + 1) == bits[1]){
+                  return today.getDate() <= bits[2]
+                }
+                return false;
             }
             $(".deletetask").click(function(){
 
@@ -232,11 +244,53 @@
           xhttp.send(parm);
           });
 
+          $(".addalert").click(function(){
+            console.log($(this).attr("id"))
+            document.getElementById("taskIdForAlert").value = $(this).attr("id");
+          });
+
           $(".addsubtask").click(function(){
             console.log($(this).attr("id"))
             document.getElementById("taskIdForSubtask").value = $(this).attr("id");
           });
 
+          $(add_alert).click(function(){
+            inputAlertData = {};
+            if(document.getElementById("hours_befor_task").value != '')
+            {
+                console.log(document.getElementById("hours_befor_task").value)
+                inputAlertData["hours_before"]= document.getElementById("hours_befor_task").value;
+
+            }else{
+                $.alert('Please enter a Hours', 'Invalid Input');
+                flag=0;
+            }
+            inputAlertData["taskId"] = document.getElementById("taskIdForAlert").value;
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                var res=JSON.parse(this.responseText);
+                if(res["message"] == "OK"){
+                    $.confirm({
+                        title: 'Sub tasks Added!',
+                        content: 'Your sub-tasks is added successfully!',
+                        buttons: {
+                            Okay: function () {
+                                location.reload(true);
+                            }
+                        }
+                    });
+                }
+            }
+          };
+            var parm='task_id='+ inputAlertData["taskId"] +'&hours_before='+inputAlertData['hours_before']+ '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+            xhttp.open("POST", "tasks/"+inputAlertData["taskId"]+'/alert/', false);
+            xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            xhttp.send(parm);
+
+
+          });
           $(addSubTaskSubmit).click(function(){
                 var inputSubTaskData ={};
                 flag = 0;
@@ -303,6 +357,9 @@
                       $(panelContainerId).show();
                   }
                 });
+              });
+              $("#clases").change(function () {
+                  $("#hours").toggle();
               });
 
 });
