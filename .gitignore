@@ -4,3 +4,4 @@ taskManger/accounts/__pycache__/
 taskManger/accounts/migrations/__pycache__/
 taskManger/taskManger/__pycache__/
 venv/
+.idea/
