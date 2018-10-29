@@ -54,13 +54,6 @@ class TaskListView(APIView):
 
         tasks_serialized = TaskListSerializer(tasks, many=True).data
 
-        i = 0
-        for each_task in tasks:
-            subtasks = SubTask.objects.filter(task=each_task)
-            subtasks_serialized = SubTaskListSerializer(subtasks, many=True).data
-            tasks_serialized[i]["subtasks"] = subtasks_serialized
-            i += 1
-
         return Response(tasks_serialized)
 
     def post(self, request):
@@ -259,31 +252,3 @@ def enable_alert_for_task_view(request, task_id):
         task.enable_alert(alert_time)
     task_serialized = TaskListSerializer(task).data
     return Response(task_serialized)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

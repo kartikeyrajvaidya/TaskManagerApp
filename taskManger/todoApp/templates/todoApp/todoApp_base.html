@@ -20,26 +20,12 @@
               var title = todo.title;
               var stylePanelTitle = '';
               var stylePanelHeading = '';
-              var subTaskList = '';
               var markTaskButton = '';
-
-
-
-              var xhttp = new XMLHttpRequest();
-              xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                      console.log(this.responseText);
-                      subTaskList=JSON.parse(this.responseText);
-                }
-              };
-              xhttp.open("GET", 'tasks/'+todo.id+'/subtasks', false);
-              xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-              xhttp.send();
 
 
               if( subTaskCount > 0){
                 subTaskCountLabel = '<span class="label label-warning">' + subTaskCount + 'subtasks</span>';
-                $.each(subTaskList, function (index, subTask) {
+                $.each(todo.subTasks, function (index, subTask) {
                   subTaskListToDisplay += '<li>' + subTask.title+ ' : '+ subTask.description+'</li>';
                 });
               }else{

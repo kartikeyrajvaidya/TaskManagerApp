@@ -13,9 +13,23 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         )
         model = Task
 
+class SubTaskListSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = (
+            'id',
+            'title',
+            'description',
+            'isCompleted',
+            'createdDate',
+            'modifiedDate',
+
+        )
+        model = SubTask
 
 class TaskListSerializer(serializers.ModelSerializer):
 
+    subTasks = SubTaskListSerializer(many=True, read_only=True)
     class Meta:
         fields = (
             'id',
@@ -43,20 +57,5 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
             'id',
             'title',
             'description',
-        )
-        model = SubTask
-
-
-class SubTaskListSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        fields = (
-            'id',
-            'title',
-            'description',
-            'isCompleted',
-            'createdDate',
-            'modifiedDate',
-
         )
         model = SubTask
