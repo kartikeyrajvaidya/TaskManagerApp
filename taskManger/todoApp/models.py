@@ -50,9 +50,16 @@ class Task(BaseTask):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     dueDate = models.DateField()
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=2)
+    alert_enabled = models.BooleanField(default=False)
+    alert_time = models.DateTimeField(null=True)
 
     def __str__(self):
         return self.title
+
+    def enable_alert(self, alert_time):
+        self.alert_enabled = True
+        self.alert_time = alert_time
+        self.save()
 
     class Meta:
         ordering = ['dueDate']

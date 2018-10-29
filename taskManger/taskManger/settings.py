@@ -27,7 +27,9 @@ SECRET_KEY = 'hq)@9zp5zf0_#i2uy*d8+n+=8(b-#y8%*utrb@gd3c&r+p65&$'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "taskmanager.pythonanywhere.com"
+    "taskmanager.pythonanywhere.com",
+    "127.0.0.1",
+    "localhost"
 ]
 
 

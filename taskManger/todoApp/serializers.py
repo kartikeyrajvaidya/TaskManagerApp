@@ -26,7 +26,9 @@ class TaskListSerializer(serializers.ModelSerializer):
             'isCompleted',
             'createdDate',
             'modifiedDate',
-            'subTasks'
+            'subTasks',
+            'alert_enabled',
+            'alert_time',
         )
         model = Task
 

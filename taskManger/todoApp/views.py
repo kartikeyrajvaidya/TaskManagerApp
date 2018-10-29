@@ -6,6 +6,7 @@ from rest_framework.status import *
 from django.contrib.auth.mixins import (LoginRequiredMixin)
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import TemplateView
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from .models import Task, SubTask
 from .serializers import TaskCreateSerializer, TaskListSerializer, \
@@ -227,3 +228,54 @@ class SubTaskDetailView(APIView):
         sub_task.save()
         response_dict["message"] = "SubTask deleted"
         return Response(response_dict)
+
+
+@permission_classes([IsAuthenticated])
+@api_view(["GET", "POST"])
+def enable_alert_for_task_view(request, task_id):
+    response_dict = {}
+    task = get_object_or_404(Task, id=task_id)
+    if request.method == "POST":
+        hours_before = request.data["hours_before"] if "hours_before" in request.data.keys() else None
+        if hours_before is None:
+            response_dict["message"] = "bad request"
+            return Response(response_dict, status=HTTP_400_BAD_REQUEST)
+        if not hours_before.isdigit():
+            response_dict["message"] = "bad request, its not a number"
+            return Response(response_dict, status=HTTP_400_BAD_REQUEST)
+        hours_before = int(hours_before)
+        day_before = task.dueDate - datetime.timedelta(1)
+        alert_time = timezone.datetime(
+            day=day_before.day, month=day_before.month, year=day_before.year,
+            tzinfo=timezone.get_current_timezone(), hour=24-hours_before)
+        task.enable_alert(alert_time)
+    task_serialized = TaskListSerializer(task).data
+    return Response(task_serialized)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
