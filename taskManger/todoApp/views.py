@@ -197,7 +197,7 @@ class SubTaskDetailView(APIView):
             response_dict["message"] = "sub task for given task not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         request_dict = request.data
-        if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 1:
+        if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 2:
             if request_dict["isCompleted"] == "TRUE":
                 sub_task.markComplete()
             else:

@@ -32,7 +32,12 @@
               if( subTaskCount > 0){
                 subTaskCountLabel = '<span class="label label-warning">' + subTaskCount + '<b>&nbsp&nbsp&nbspSubtasks</b></span>';
                 $.each(todo.subTasks, function (index, subTask) {
-                  subTaskListToDisplay += '<li>' + subTask.title+ ' : '+ subTask.description+'</li>';
+                  if(subTask.isCompleted){
+                    subTaskListToDisplay += '<li><button class="btn btn-xs btn-warning marksubtask" id="subundone_'+subTask.id+'_'+todo.id+'"><i class="fa fa-clock-o fa-2x" aria-hidden="true" style="font-size:18px;"></i></button>&nbsp&nbsp&nbsp&nbsp<strong>' + subTask.title+ ' : '+ subTask.description+'</strong></li><br>';
+                  }else{
+                      subTaskListToDisplay += '<li><button class="btn btn-xs btn-success marksubtask" id="subdone_'+subTask.id+'_'+todo.id+'"><i class="fa fa-check fa-2x" aria-hidden="true" style="font-size:18px;"></i></button>&nbsp&nbsp&nbsp&nbsp<strong>' + subTask.title+ ' : '+ subTask.description+'</strong></li><br>';
+                  }
+
                 });
               }else{
                 subTaskListToDisplay = 'No SubTask To DisPlay';
@@ -43,14 +48,14 @@
                 stylePanelTitle = 'style="color:#000000;"';
                 taskCompleteMarkerAndDueDate = '<span class="label label-success">Completed</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
                                               +'<span class="label label-success">'+todo.dueDate+'</span>';
-                markTaskButton = '<span class="fa fa-check fa-2x">&nbsp&nbsp&nbsp&nbsp</span></i><button class="btn btn-warning marktask" id="undone_'+todo.id+'" href="#">Mark as Pending</button>&nbsp&nbsp&nbsp&nbsp';
+                markTaskButton = '<button class="btn btn-warning marktask" id="undone_'+todo.id+'" href="#">Mark Task as Pending</button>&nbsp&nbsp&nbsp&nbsp';
 
               }else{
                 stylePanelHeading='style="background:#ffc1c1;"';
                 stylePanelTitle = 'style="color:#000000;"';
                 taskCompleteMarkerAndDueDate = '<span class="label label-danger">Pending</span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp'
                                               +'<span class="label label-danger">'+todo.dueDate+'</span>';
-                markTaskButton = '<span class="fa fa-clock-o fa-2x"></span>&nbsp&nbsp&nbsp&nbsp<button class="btn btn-success marktask" id="done_'+todo.id+'">Mark Complete</button>&nbsp&nbsp&nbsp&nbsp';
+                markTaskButton = '</span>&nbsp&nbsp&nbsp&nbsp<button class="btn btn-success marktask" id="done_'+todo.id+'">Mark Task as Complete</button>&nbsp&nbsp&nbsp&nbsp';
               }
 
 
@@ -66,7 +71,7 @@
               + '<div class=" row col-md-3" align="end">' + taskCompleteMarkerAndDueDate + '</div></div></div></div>'
               + '<div id="collapse'+index+'" class="panel-collapse collapse">'
               + '<div class="panel-body"><br>'
-              + '<ul>' + subTaskListToDisplay + '</ul><br>'
+              + '<ol>' + subTaskListToDisplay + '</ol><br>'
               + '<button class="btn btn-primary addsubtask" id="'+todo.id+'" data-toggle="modal" data-target="#add_sub_task_modal">Add Sub-tasks</button></div>'
               + '<div class="panel-footer" align="end">'+ markTaskButton
               + '<button class="btn btn-primary addalert" id="'+todo.id+'" data-toggle="modal" data-target="#add_alert_for_task_modal"'+buttonDisabled+'>Add Alert Fot Tasks</button>&nbsp&nbsp&nbsp&nbsp&nbsp'
@@ -291,6 +296,66 @@
 
 
           });
+
+          $(".marksubtask").click(function(){
+               console.log($(this).attr("id"))
+
+               var view_id = $(this).attr("id")
+               console.log("MARK SUBBBTASK VIEW ID "+ view_id)
+
+               var action = view_id.split("_")[0]
+               var sub_task_id = view_id.split("_")[1]
+               var task_id = view_id.split("_")[2]
+               console.log("MARK SUBBTASK ID "+ task_id)
+
+               var is_completed = "FALSE"
+               if(action=="subdone"){
+                   is_completed = "TRUE"
+               }
+
+
+               var xhttp = new XMLHttpRequest();
+               xhttp.onreadystatechange = function() {
+               if (this.readyState == 4 && this.status == 200) {
+                   console.log(this.responseText);
+                   var res=JSON.parse(this.responseText);
+                   if(res["message"] == "OK"){
+                       if(is_completed=="TRUE"){
+                           $.confirm({
+                               title: 'Sub-Task marked as Completed!',
+                               content: 'This sub-task was marked completed successfully!',
+                               buttons: {
+                                   Okay: function () {
+                                       location.reload(true);
+                                   }
+                               }
+                           });
+                       }else{
+                           $.confirm({
+                               title: 'Sub-Task marked as Pending!',
+                               content: 'This Sub-task was marked as pending !',
+                               buttons: {
+                                   Okay: function () {
+                                       location.reload(true);
+                                   }
+                               }
+                           });
+                       }
+
+                   }
+
+               }
+               };
+               var parm='isCompleted='+ is_completed + '&csrfmiddlewaretoken=' + '{{csrf_token}}';
+               xhttp.open("PUT", 'tasks/'+task_id+'/subtasks/'+sub_task_id+'/', false);
+               xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+               xhttp.send(parm);
+
+
+           });
+
+
+
           $(addSubTaskSubmit).click(function(){
                 var inputSubTaskData ={};
                 flag = 0;
