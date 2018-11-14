@@ -23,8 +23,8 @@ class HomePage(LoginRequiredMixin,TemplateView):
 @permission_classes([IsAuthenticated])
 class TaskListView(APIView):
 
-
     def get(self, request):
+
         """ GET - lists all tasks of user """
 
         response_dict = {}
@@ -38,15 +38,15 @@ class TaskListView(APIView):
         print(filter_type)
 
         if filter_type == "All":
-            tasks = Task.objects.filter(user=request.user, isDeleted=False)
+            tasks = Task.objects.filter(user=request.user, is_deleted=False)
         elif filter_type == "This Week":
-            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate__range=[start_week, end_week])
+            tasks = Task.objects.filter(user=request.user, is_deleted=False, dueDate__range=[start_week, end_week])
         elif filter_type == "Next Week":
-            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate__range=[start_nextweek, end_nextweek])
+            tasks = Task.objects.filter(user=request.user, is_deleted=False, dueDate__range=[start_nextweek, end_nextweek])
         elif filter_type == "Overdue":
-            tasks = Task.objects.filter(user=request.user, isDeleted=False, isCompleted=False, dueDate__lt=today)
+            tasks = Task.objects.filter(user=request.user, is_deleted=False, is_completed=False, dueDate__lt=today)
         else:
-            tasks = Task.objects.filter(user=request.user, isDeleted=False, dueDate=today)
+            tasks = Task.objects.filter(user=request.user, is_deleted=False, dueDate=today)
 
         if tasks is None:
             response_dict["message"] = "No Task For Today Enjoy"
@@ -80,7 +80,7 @@ class TaskDetailView(APIView):
         """ GET - show a task by id """
 
         response_dict = {}
-        task = Task.objects.filter(id=task_id, isDeleted=False).first()
+        task = Task.objects.filter(id=task_id, is_deleted=False).first()
         if task is None:
             response_dict["message"] = "task with given id not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
@@ -93,7 +93,7 @@ class TaskDetailView(APIView):
         """ PUT - update a task """
 
         response_dict = {}
-        task = Task.objects.filter(id=task_id, isDeleted=False).first()
+        task = Task.objects.filter(id=task_id, is_deleted=False).first()
         print(task)
         if task is None:
             response_dict["message"] = "task with given id not found"
@@ -104,12 +104,12 @@ class TaskDetailView(APIView):
         if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 2:
             print('Inside')
             if request_dict["isCompleted"] == "TRUE":
-                task.markComplete()
+                task.mark_complete()
             else:
-                task.markPending()
+                task.mark_pending()
             task.save()
             response_dict["message"] = "OK"
-            response_dict["task_completed"] = task.isCompleted
+            response_dict["task_completed"] = task.is_completed
             return Response(response_dict)
         task_serializer = TaskCreateSerializer(instance=task, data=request_dict)
         if task_serializer.is_valid():
@@ -127,7 +127,7 @@ class TaskDetailView(APIView):
 
         """ DELETE - soft delete a task """
         response_dict = {}
-        task = Task.objects.filter(id=task_id, isDeleted=False).first()
+        task = Task.objects.filter(id=task_id, is_deleted=False).first()
         print(task)
         if task is None:
             response_dict["message"] = "OK"
@@ -147,7 +147,7 @@ class SubTaskListView(APIView):
         """ GET - show subtasks of a task by id"""
 
         task = get_object_or_404(Task, id=task_id)
-        subtasks = SubTask.objects.filter(task=task, isDeleted=False)
+        subtasks = SubTask.objects.filter(task=task, is_deleted=False)
         subtasks_serialized = SubTaskListSerializer(subtasks, many=True).data
         return Response(subtasks_serialized)
 
@@ -179,7 +179,7 @@ class SubTaskDetailView(APIView):
 
         response_dict = {}
         task = get_object_or_404(Task, id=task_id)
-        sub_task = SubTask.objects.filter(id=subtask_id, isDeleted=False).first()
+        sub_task = SubTask.objects.filter(id=subtask_id, is_deleted=False).first()
         if sub_task is None:
             response_dict["message"] = "sub task for given task not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
@@ -192,19 +192,19 @@ class SubTaskDetailView(APIView):
         """ PUT - update a subtask """
 
         response_dict = {}
-        sub_task = SubTask.objects.filter(task__id=task_id, id=subtask_id, isDeleted=False).first()
+        sub_task = SubTask.objects.filter(task__id=task_id, id=subtask_id, is_deleted=False).first()
         if sub_task is None:
             response_dict["message"] = "sub task for given task not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
         request_dict = request.data
         if "isCompleted" in request_dict.keys() and len(request_dict.keys()) == 2:
             if request_dict["isCompleted"] == "TRUE":
-                sub_task.markComplete()
+                sub_task.mark_complete()
             else:
-                sub_task.markPending()
+                sub_task.mark_pending()
             sub_task.save()
             response_dict["message"] = "OK"
-            response_dict["subtask_completed"] = sub_task.isCompleted
+            response_dict["subtask_completed"] = sub_task.is_completed
             return Response(response_dict)
         sub_task_serializer = SubTaskCreateSerializer(instance=sub_task, data=request_dict)
         if sub_task_serializer.is_valid():
@@ -221,11 +221,11 @@ class SubTaskDetailView(APIView):
         """ DELETE - soft delete a subtask """
 
         response_dict = {}
-        sub_task = SubTask.objects.filter(task__id=task_id, id=subtask_id, isDeleted=False).first()
+        sub_task = SubTask.objects.filter(task__id=task_id, id=subtask_id, is_deleted=False).first()
         if sub_task is None:
             response_dict["message"] = "sub task for given task not found"
             return Response(response_dict, status=HTTP_404_NOT_FOUND)
-        sub_task.softDelete()
+        sub_task.soft_delete()
         sub_task.save()
         response_dict["message"] = "SubTask deleted"
         return Response(response_dict)

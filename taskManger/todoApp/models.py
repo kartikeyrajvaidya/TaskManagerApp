@@ -18,21 +18,21 @@ class BaseTask(TimeStampedModel):
 
     title = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
-    isCompleted = models.BooleanField(default=False)
-    isDeleted = models.BooleanField(default=False)
-    deletedAtDate = models.DateTimeField(blank=True, null=True)
+    is_completed = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    deleted_at_date = models.DateTimeField(blank=True, null=True)
 
-    def softDelete(self):
-        self.isDeleted = True
-        self.deletedAtDate = timezone.now()
+    def soft_delete(self):
+        self.is_deleted = True
+        self.deleted_at_date = timezone.now()
         self.save()
 
-    def markComplete(self):
-        self.isCompleted = True
+    def mark_complete(self):
+        self.is_completed = True
         self.save()
 
-    def markPending(self):
-        self.isCompleted = False
+    def mark_pending(self):
+        self.is_completed = False
         self.save()
 
     class Meta:
